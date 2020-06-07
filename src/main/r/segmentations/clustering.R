@@ -6,10 +6,10 @@ hclust.disagreement.thresholds.default <- c(0.1, 0.3, 0.5, 0.7, 0.9)
 image.mask.buffer.default <- 1
 size.function.default <- "area"
 
-Clusterings <- function(task, segment.size.functions = list(AreaSegmentSizeFunction(), CannySegmentSizeFunction(task, 1, 2), CannySegmentSizeFunction(task, 5, 16)), xpath.element.size.functions = list(IdentityXPathElementSizeFunction(), CharactersXPathElementSizeFunction(task)), elements = ReadElements(task)) {
+Clusterings <- function(task, segment.size.functions = list(AreaSegmentSizeFunction(), CannySegmentSizeFunction(task, name="edges-fine"), CannySegmentSizeFunction(task, name="edges-coarse")), xpath.node.size.functions = list(IdentityXPathNodeSizeFunction(), CharactersXPathNodeSizeFunction(task)), nodes = ReadNodes(task)) {
   pixel.clusterings <- PixelBasedClusterings(task$segmentations, segment.size.functions = segment.size.functions)
-  element.clusterings <- ElementBasedClusterings(task$segmentations, elements = elements, xpath.element.size.functions = xpath.element.size.functions)
-  return(c(pixel.clusterings, element.clusterings))
+  node.clusterings <- NodeBasedClusterings(task$segmentations, nodes = nodes, xpath.node.size.functions = xpath.node.size.functions)
+  return(c(pixel.clusterings, node.clusterings))
 }
 
 Clustering.task <- function(task, size.function = size.function.default) {
@@ -25,10 +25,14 @@ Clustering.task <- function(task, size.function = size.function.default) {
     return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(AreaSegmentSizeFunction()))[[1]])
   } else if (size.function == "canny") {
     return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, canny.sigma, canny.upper.threshold)))[[1]])
+  } else if (size.function == "edges-fine") {
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-fine")))[[1]])
+  } else if (size.function == "edges-coarse") {
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-coarse")))[[1]])
   } else if (size.function == "identity") {
-    return(ElementBasedClustering(task$segmentations, ReadElements(task), xpath.element.size.function = IdentityXPathElementSizeFunction()))
+    return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = IdentityXPathNodeSizeFunction()))
   } else if (size.function == "ncharacters") {
-    return(ElementBasedClustering(task$segmentations, ReadElements(task), xpath.element.size.function = CharactersXPathElementSizeFunction(task)))
+    return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = CharactersXPathNodeSizeFunction(task)))
   } else {
     stop(paste("Unknown size.function:", size.function))
   }
@@ -179,33 +183,33 @@ PixelBasedClusterings <- function(segmentations, segment.size.functions = list(A
   return(clusterings)
 }
 
-ElementBasedClusterings <- function(segmentations, elements, xpath.element.size.functions = list(IdentityXPathElementSizeFunction()), ...) {
-  clusterings <- lapply(xpath.element.size.functions, function(xpath.element.size.function) {return(ElementBasedClustering(segmentations, elements, xpath.element.size.function = xpath.element.size.function, ...))})
-  names(clusterings) <- sapply(xpath.element.size.functions, attr, "name")
+NodeBasedClusterings <- function(segmentations, nodes, xpath.node.size.functions = list(IdentityXPathNodeSizeFunction()), ...) {
+  clusterings <- lapply(xpath.node.size.functions, function(xpath.node.size.function) {return(NodeBasedClustering(segmentations, nodes, xpath.node.size.function = xpath.node.size.function, ...))})
+  names(clusterings) <- sapply(xpath.node.size.functions, attr, "name")
   return(clusterings)
 }
 
-ElementBasedClustering <- function(segmentations, elements, xpath.element.size.function = IdentityXPathElementSizeFunction()) {
+NodeBasedClustering <- function(segmentations, nodes, xpath.node.size.function = IdentityXPathNodeSizeFunction()) {
   num.segments <- sum(GetLengths(segmentations))
   segment.multipolygons <- as.sfc.segmentations(segmentations)
 
   # cluster.multipolygons and sizes
-  num.elements <- length(elements)
-  xpaths <- names(elements)
-  elements.equality <- st_equals(elements)
+  num.nodes <- length(nodes)
+  xpaths <- names(nodes)
+  nodes.equality <- st_equals(nodes)
   GetSizeByIndex <- function(e) {
-    element.equality <- elements.equality[[e]]
-    if (element.equality[1] == e) {
-      return(sum(sapply(xpaths[element.equality], xpath.element.size.function)))
+    node.equality <- nodes.equality[[e]]
+    if (node.equality[1] == e) {
+      return(sum(sapply(xpaths[node.equality], xpath.node.size.function)))
     } else {
-      return(0) # same as another element with smaller index
+      return(0) # same as another node with smaller index
     }
   }
-  sizes <- sapply(1:num.elements, GetSizeByIndex)
-  elements.non.duplicated <- sizes > 0
-  sizes <- sizes[elements.non.duplicated]
-  num.multipolygons <- length(elements.non.duplicated)
-  cluster.multipolygons <- elements[elements.non.duplicated]
+  sizes <- sapply(1:num.nodes, GetSizeByIndex)
+  nodes.non.duplicated <- sizes > 0
+  sizes <- sizes[nodes.non.duplicated]
+  num.multipolygons <- length(nodes.non.duplicated)
+  cluster.multipolygons <- nodes[nodes.non.duplicated]
 
   # membership.matrix
   membership.matrix <- t(st_contains(segment.multipolygons, cluster.multipolygons, sparse=FALSE))
@@ -215,7 +219,7 @@ ElementBasedClustering <- function(segmentations, elements, xpath.element.size.f
 
   # compose
   clustering <- Clustering(cluster.multipolygons, membership.matrix, membership.subsets = membership.subsets, sizes = sizes)
-  class(clustering) <- c("elementBasedClustering", class(clustering))
+  class(clustering) <- c("nodeBasedClustering", class(clustering))
   return(clustering)
 }
 
@@ -264,15 +268,19 @@ SumClusterSizes <- function(clustering) {
 AreaSegmentSizeFunction <- function() {
   size.function <- st_area
   class(size.function) <- c("SegmentSizeFunction", "function")
-  attr(size.function, "name") <- "area"
+  attr(size.function, "name") <- "pixel"
   return(size.function)
 }
 
-CannySegmentSizeFunction <- function(task, sigma, upper.threshold) {
-  mask <- ReadCannyMask(task, sigma, upper.threshold)
+CannySegmentSizeFunction <- function(task, sigma = 1, upper.threshold = 2, name = NULL) {
+  mask <- ReadCannyMask(task, sigma, upper.threshold, name)
   size.function <- ImageMaskSegmentSizeFunction(mask)
   class(size.function) <- c("SegmentSizeFunction", "function")
-  attr(size.function, "name") <- paste("canny-0x", sigma, "-1-", upper.threshold, sep="")
+  if (is.null(mask)) {
+    attr(size.function, "name") <- paste("canny-0x", sigma, "-1-", upper.threshold, sep="")
+  } else {
+    attr(size.function, "name") <- name
+  }
   return(size.function)
 }
 
@@ -300,24 +308,24 @@ ImageMaskSegmentSizeFunction.mask <- function(mask, buffer = image.mask.buffer.d
   return(size.function)
 }
 
-IdentityXPathElementSizeFunction <- function() {
+IdentityXPathNodeSizeFunction <- function() {
   size.function <- function(xpath) { return(1) }
-  class(size.function) <- c("XPathElementSizeFunction", "function")
+  class(size.function) <- c("XPathNodeSizeFunction", "function")
   attr(size.function, "name") <- "identity"
   return(size.function)
 }
 
-CharactersXPathElementSizeFunction <- function(task) {
-  element.character.counts <- ReadElementCharacterCounts(task)
+CharactersXPathNodeSizeFunction <- function(task) {
+  node.character.counts <- ReadNodeCharacterCounts(task)
   size.function <- function(xpath) {
-      size <- element.character.counts[[xpath]]
+      size <- node.character.counts[[xpath]]
       if (is.null(size)) {
         return(0)
       } else {
         return(size)
       }
     }
-  class(size.function) <- c("XPathElementSizeFunction", "function")
+  class(size.function) <- c("XPathNodeSizeFunction", "function")
   attr(size.function, "name") <- "ncharacters"
   return(size.function)
 }
