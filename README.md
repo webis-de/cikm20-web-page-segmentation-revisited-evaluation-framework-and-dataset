@@ -6,8 +6,19 @@ If you want to test a segmentation algorithm, read [Algorithm Evaluation](#algor
 If you want to extend this dataset, create your own, or just check how we did it, read [Dataset Creation](#dataset-creation).
 
 
+## Requirements
+R (tested with 3.4.4)
+  - jsonlite (tested with 1.6)
+  - optparse (tested with 1.6.2)
+  - png (tested with 0.1-7)
+  - raster (tested with 2.9-23)
+  - sf (tested with 0.7-7)
+  - sp (tested with 1.3-1)
+
 
 ## Algorithm Evaluation
+
+
 The segmentation algorithm has to produce a segmentation in the same JSON format as the segmentations in this dataset. Then run:
 ```
 Rscript src/main/r/evaluate-segmentation.R --algorithm <algorithm-segmentation.json> --ground-truth webis-web-segments-20/000000/ground-truth.json
