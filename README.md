@@ -1,6 +1,4 @@
-# web-page-segmentation-revisited
-Code for "Web Page Segmentation Revisited: Evaluation Framework and Dataset", submitted as resources paper to CIKM 2020.
-
+# Code for the CIKM20 Resources Paper: "Web Page Segmentation Revisited: Evaluation Framework and Dataset"
 The code snippets of this README assume you unpacked the archives of the [dataset](https://doi.org/10.5281/zenodo.3354902) into this directory. For illustration, the snippets just use the web page `000000` (so you can just download the `webis-web-segments-20-000000.zip` to try them out), but can be applied to all others in the same manner.
 If you want to test a segmentation algorithm, read [Algorithm Evaluation](#algorithm-evaluation).
 If you want to extend this dataset, create your own, or just check how we did it, read [Dataset Creation](#dataset-creation).
