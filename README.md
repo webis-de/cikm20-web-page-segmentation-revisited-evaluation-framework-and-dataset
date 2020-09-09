@@ -1,5 +1,5 @@
 # Code for the CIKM20 Resources Paper: "Web Page Segmentation Revisited: Evaluation Framework and Dataset"
-The code snippets of this README assume you unpacked the archives of the [dataset](https://doi.org/10.5281/zenodo.3354902) into this directory. For illustration, the snippets just use the web page `000000` (so you can just download the `webis-web-segments-20-000000.zip` to try them out), but can be applied to all others in the same manner.
+The code snippets of this README assume you unpacked the archives of the [dataset](https://doi.org/10.5281/zenodo.3354902) into this directory. For illustration, the snippets just use the web page `000000` (so you can just download the `webis-webseg-20-000000.zip` to try them out), but can be applied to all others in the same manner.
 If you want to test a segmentation algorithm, read [Algorithm Evaluation](#algorithm-evaluation).
 If you want to extend this dataset, create your own, or just check how we did it, read [Dataset Creation](#dataset-creation).
 
@@ -13,15 +13,17 @@ R (tested with 3.4.4)
   - sf (tested with 0.7-7)
   - sp (tested with 1.3-1)
 
+Relies on a local installation of `libgdal-dev` and `libudunits2-dev` (package names for Debian/Ubuntu).
+
 
 ## Algorithm Evaluation
 
 
 The segmentation algorithm has to produce a segmentation in the same JSON format as the segmentations in this dataset. Then run:
 ```
-Rscript src/main/r/evaluate-segmentation.R --algorithm <algorithm-segmentation.json> --ground-truth webis-web-segments-20/000000/ground-truth.json
+Rscript src/main/r/evaluate-segmentation.R --algorithm <algorithm-segmentation.json> --ground-truth webis-webseg-20/000000/ground-truth.json
 # Example: treat first fitted annotation as algorithm (ID of that annotation starts with 3I01)
-Rscript src/main/r/evaluate-segmentation.R --algorithm webis-web-segments-20/000000/fitted-annotations.json --algorithm-segmentation 3IO1 --ground-truth webis-web-segments-20/000000/ground-truth.json
+Rscript src/main/r/evaluate-segmentation.R --algorithm webis-webseg-20/000000/fitted-annotations.json --algorithm-segmentation 3IO1 --ground-truth webis-web-segments-20/000000/ground-truth.json
 ```
 
 ### Run In-browser Segmentation Algorithm
@@ -45,28 +47,34 @@ Then do the following to reproduce our steps of dataset creation and agreement c
 ### Edge Detection
 We use image magick to detect edges. You can use it like this:
 ```
-./src/main/bash/detect-edges.sh webis-web-segments-20/000000/screenshot.png 1  2 # fine
-mv webis-web-segments-20/000000/screenshot-canny-0x1-1-2.png  webis-web-segments-20/000000/screenshot-edges-fine.png
-./src/main/bash/detect-edges.sh webis-web-segments-20/000000/screenshot.png 5 16 # coarse
-mv webis-web-segments-20/000000/screenshot-canny-0x5-1-16.png webis-web-segments-20/000000/screenshot-edges-coarse.png
+./src/main/bash/detect-edges.sh webis-webseg-20/000000/screenshot.png 1  2 # fine
+mv webis-webseg-20/000000/screenshot-canny-0x1-1-2.png  webis-web-segments-20/000000/screenshot-edges-fine.png
+./src/main/bash/detect-edges.sh webis-webseg-20/000000/screenshot.png 5 16 # coarse
+mv webis-webseg-20/000000/screenshot-canny-0x5-1-16.png webis-web-segments-20/000000/screenshot-edges-coarse.png
 ```
 
 ### Fit to DOM Nodes
 ```
-Rscript src/main/r/fit-to-dom-nodes.R --input webis-web-segments-20/000000/annotations.json --output webis-web-segments-20/000000/fitted-annotations.json
+Rscript src/main/r/fit-to-dom-nodes.R --input webis-webseg-20/000000/annotations.json --output webis-web-segments-20/000000/fitted-annotations.json
 ```
 
 ### Calculate Agreement Matrices
 ```
-Rscript src/main/r/calculate-agreement.R --input webis-web-segments-20/000000/fitted-annotations.json --segmentations fitted --output webis-web-segments-20/000000/agreement
-tail webis-web-segments-20/000000/agreement/*
+Rscript src/main/r/calculate-agreement.R --input webis-webseg-20/000000/fitted-annotations.json --segmentations fitted --output webis-web-segments-20/000000/agreement
+tail webis-webseg-20/000000/agreement/*
 ```
 
 ### Fuse Segmentations
 ```
 min_annotators=3
 disagreement_threshold=0.5
-Rscript src/main/r/fuse-segmentations.R --input webis-web-segments-20/000000/fitted-annotations.json --segments-min-annotators $min_annotators --disagreement-threshold=$disagreement_threshold --output webis-web-segments-20/000000/ground-truth.json
+Rscript src/main/r/fuse-segmentations.R --input webis-webseg-20/000000/fitted-annotations.json --segments-min-annotators $min_annotators --disagreement-threshold=$disagreement_threshold --output webis-web-segments-20/000000/ground-truth.json
+```
+
+### Plotting Segmentations
+See the command help for all parameters.
+```
+Rscript src/main/r/plot-segmentations.R --input webis-webseg-20/000000/annotations.json --frames --line-width 5 --screenshot webis-webseg-20/000000/screenshot-edges-coarse.png --output annotations-on-coarse-edges.png
 ```
 
 

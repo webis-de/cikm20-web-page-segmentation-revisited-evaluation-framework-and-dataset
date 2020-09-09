@@ -121,8 +121,12 @@ plot.segment <- function(segment, plot.height = par("usr")[4], jitter = FALSE, c
       polygon[[r]][,2] <- plot.height - polygon[[r]][,2]
     }
     # add alpha to color
-    col <- col2rgb(col)
-    col <- rgb(col[1] / 255, col[2] / 255, col[3] / 255, alpha = alpha)
+    if (!is.null(col)) {
+      col <- col2rgb(col)
+      col <- rgb(col[1] / 255, col[2] / 255, col[3] / 255, alpha = alpha)
+    } else {
+      col <- rgb(0,0,0,alpha=0)
+    }
     # plot
     plot(polygon, add = TRUE, col = col, border = border, ...)
   }

@@ -32,14 +32,13 @@ Boundingbox.segmentations <- function(segmentations) {
   return(as.segmentations(lapply(segmentations, Boundingbox)))
 }
 
-plot.segmentations <- function(segmentations, jitter = NA, ...) {
-  borders <- c("cyan", "green", "purple", "orange", "red", "blue", "salmon")
+plot.segmentations <- function(segmentations, jitter = NA, col = c("cyan", "green", "purple", "orange", "red", "blue", "salmon"), border = col, ...) {
   if (is.na(jitter)) {
     jitter <- length(segmentations) > 1
   }
 
   for (s in 1:length(segmentations)) {
-    plot(segmentations[[s]], col = borders[s], border = borders[s], jitter = jitter, ...)
+    plot(segmentations[[s]], col = col[s], border = border[s], jitter = jitter, ...)
   }
 }
 
