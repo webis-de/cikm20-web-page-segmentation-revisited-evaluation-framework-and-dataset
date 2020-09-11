@@ -88,6 +88,10 @@ asJSON.segment <- function(segment) {
   return(lapply(segment, fromPolygon))
 }
 
+as.character.segment <- function(segment) {
+  return(toJSON(segment, force = TRUE))
+}
+
 is.segment <- function(segment) {
   return(inherits(segment, "segment"))
 }
@@ -124,11 +128,11 @@ plot.segment <- function(segment, plot.height = par("usr")[4], jitter = FALSE, c
     if (!is.null(col)) {
       col <- col2rgb(col)
       col <- rgb(col[1] / 255, col[2] / 255, col[3] / 255, alpha = alpha)
+      # plot
+      plot(polygon, add = TRUE, col = col, border = border, ...)
     } else {
-      col <- rgb(0,0,0,alpha=0)
+      plot(polygon, add = TRUE, border = border, ...)
     }
-    # plot
-    plot(polygon, add = TRUE, col = col, border = border, ...)
   }
 }
 

@@ -67,7 +67,7 @@ plot.segmentation <- function(segmentation, col = c("green", "blue", "purple", "
 subset.segmentation <- function(segmentation, indices) {
   segmentation <- segmentation[indices]
   class(segmentation) <- c("segmentation", "list")
-  return(segmentations)
+  return(segmentation)
 }
 
 unique.segmentation <- function(segmentation, write.info = FALSE) {
