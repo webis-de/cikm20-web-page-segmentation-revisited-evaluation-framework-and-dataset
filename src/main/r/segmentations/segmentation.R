@@ -91,11 +91,18 @@ unique.segmentation <- function(segmentation, write.info = FALSE) {
   return(segmentation)
 }
 
-RemoveEmptySegments <- function(segmentation) {
+GetEmptySegments <- function(segmentation) {
   sfc <- as.sfc.segmentation(segmentation)
   empties <- st_area(sfc) == 0
-  segmentation <- segmentation[!empties]
-  class(segmentation) <- c("segmentation", "list")
+  return(empties)
+}
+
+RemoveEmptySegments <- function(segmentation, write.info = FALSE) {
+  empties <- GetEmptySegments(segmentation)
+  segmentation <- subset(segmentation, !empties)
+  if (write.info) {
+    write(paste("  remove-empty-segments: ", sum(empties), sep=""), file="")
+  }
   return(segmentation)
 }
 

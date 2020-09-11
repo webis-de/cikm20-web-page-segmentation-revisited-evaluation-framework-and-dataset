@@ -25,12 +25,21 @@ FitToNodes.segmentation <- function(segmentation, nodes, node.areas = st_area(no
   if (length(segmentation) == 0) {
     return(segmentation)
   } else {
+    segmentation.old <- segmentation
     for (s in 1:length(segmentation)) {
       segmentation[[s]] <- FitToNodes(segmentation[[s]], nodes, node.areas = node.areas, write.info = write.info, ...)
     }
+    empties <- GetEmptySegments(segmentation)
+    segmentation <- subset(segmentation, !empties)
+    if (write.info) {
+      write(paste("  removed-empty-segments: ", sum(empties), sep=""), file="")
+      for (empty in empties) {
+        write(paste("  removed-empty-segment: ", segmentation.old[[empty]], sep=""), file="")
+      }
+    }
   }
 
-  return(unique(RemoveEmptySegments(segmentation), write.info = write.info))
+  return(unique(RemoveEmptySegments(segmentation, write.info = write.info), write.info = write.info))
 }
 
 FitToNodes.segment <- function(segment, nodes, node.areas = st_area(nodes), fit.containment.threshold = fit.containment.threshold.default, write.info = FALSE) {
