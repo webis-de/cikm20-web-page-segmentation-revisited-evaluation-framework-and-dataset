@@ -1,5 +1,5 @@
 # Code for the CIKM20 Resources Paper: "Web Page Segmentation Revisited: Evaluation Framework and Dataset"
-The code snippets of this README assume you unpacked the archives of the [dataset](https://doi.org/10.5281/zenodo.3354902) into this directory. For illustration, the snippets just use the web page `000000` (so you can just download the `webis-webseg-20-000000.zip` to try them out), but can be applied to all others in the same manner.
+The code snippets of this README assume you unpacked the archives of the [dataset](https://webis.de/data.html?q=web-archive#webis-webseg-20) into this directory. For illustration, the code snippets below just use the web page `000000` (so you can just download the `webis-webseg-20-000000.zip` to try them out), but can be applied to all others in the same manner.
 If you want to test a segmentation algorithm, read [Algorithm Evaluation](#algorithm-evaluation).
 If you want to extend this dataset, create your own, or just check how we did it, read [Dataset Creation](#dataset-creation).
 
@@ -57,6 +57,7 @@ mv webis-webseg-20/000000/screenshot-canny-0x5-1-16.png webis-web-segments-20/00
 ```
 Rscript src/main/r/fit-to-dom-nodes.R --input webis-webseg-20/000000/annotations.json --output webis-web-segments-20/000000/fitted-annotations.json
 ```
+Note: you can use the bash scripts [evaluate-fitting.sh](src/main/bash/evaluate-fitting.sh) and [get-empty-segments.sh](src/main/bash/get-empty-segments-file.sh) to process the standard output of the `fit-to-dom-nodes.R` and to reproduce some analysis of the paper.
 
 ### Calculate Agreement Matrices
 ```
