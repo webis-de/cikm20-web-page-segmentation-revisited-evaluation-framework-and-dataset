@@ -5,14 +5,15 @@ hclust.method.default <- "average"
 hclust.disagreement.thresholds.default <- c(0.1, 0.3, 0.5, 0.7, 0.9)
 image.mask.buffer.default <- 1
 size.function.default <- "area"
+precision.default <- 1
 
-Clusterings <- function(task, segment.size.functions = list(AreaSegmentSizeFunction(), CannySegmentSizeFunction(task, name="edges-fine"), CannySegmentSizeFunction(task, name="edges-coarse")), xpath.node.size.functions = list(IdentityXPathNodeSizeFunction(), CharactersXPathNodeSizeFunction(task)), nodes = ReadNodes(task)) {
-  pixel.clusterings <- PixelBasedClusterings(task$segmentations, segment.size.functions = segment.size.functions)
+Clusterings <- function(task, segment.size.functions = list(AreaSegmentSizeFunction(), CannySegmentSizeFunction(task, name="edges-fine"), CannySegmentSizeFunction(task, name="edges-coarse")), xpath.node.size.functions = list(IdentityXPathNodeSizeFunction(), CharactersXPathNodeSizeFunction(task)), nodes = ReadNodes(task), precision = precision.default) {
+  pixel.clusterings <- PixelBasedClusterings(task$segmentations, segment.size.functions = segment.size.functions, precision = precision)
   node.clusterings <- NodeBasedClusterings(task$segmentations, nodes = nodes, xpath.node.size.functions = xpath.node.size.functions)
   return(c(pixel.clusterings, node.clusterings))
 }
 
-Clustering.task <- function(task, size.function = size.function.default) {
+Clustering.task <- function(task, size.function = size.function.default, ...) {
   if (length(grep("^canny-", size.function)) > 0) {
     canny.parameters <- as.numeric(strsplit(sub("canny-0x", "", size.function), "-")[[1]])
     size.function <- "canny"
@@ -22,17 +23,17 @@ Clustering.task <- function(task, size.function = size.function.default) {
   }
 
   if (size.function == "area") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(AreaSegmentSizeFunction()))[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(AreaSegmentSizeFunction()), ...)[[1]])
   } else if (size.function == "canny") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, canny.sigma, canny.upper.threshold)))[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, canny.sigma, canny.upper.threshold)), ...)[[1]])
   } else if (size.function == "edges-fine") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-fine")))[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-fine")), ...)[[1]])
   } else if (size.function == "edges-coarse") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-coarse")))[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-coarse")), ...)[[1]])
   } else if (size.function == "identity") {
-    return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = IdentityXPathNodeSizeFunction()))
+    return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = IdentityXPathNodeSizeFunction(), ...))
   } else if (size.function == "ncharacters") {
-    return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = CharactersXPathNodeSizeFunction(task)))
+    return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = CharactersXPathNodeSizeFunction(task), ...))
   } else {
     stop(paste("Unknown size.function:", size.function))
   }
@@ -152,13 +153,13 @@ subset.clustering <- function(clustering, indices, ...) {
   return(clustering)
 }
 
-PixelBasedClusterings <- function(segmentations, segment.size.functions = list(AreaSegmentSizeFunction())) {
+PixelBasedClusterings <- function(segmentations, segment.size.functions = list(AreaSegmentSizeFunction()), precision = precision.default) {
   num.segments <- sum(GetLengths(segmentations))
 
   segmentation.geometries <- st_simplify(as.sfc.segmentations(segmentations))
   segmentation.geometries <- st_snap(segmentation.geometries, segmentation.geometries, 1)
-  segmentation.geometries <- segmentation.geometries[st_area(st_set_precision(segmentation.geometries, 1)) >= 1]
-  segmentation.geometries <- segmentation.geometries[st_is_valid(st_set_precision(segmentation.geometries, 1))]
+  segmentation.geometries <- segmentation.geometries[st_area(st_set_precision(segmentation.geometries, precision)) >= 1]
+  segmentation.geometries <- segmentation.geometries[st_is_valid(st_set_precision(segmentation.geometries, precision))]
   cluster.geometries <- st_intersection(segmentation.geometries)
   cluster.geometries.nonempty <- st_area(cluster.geometries) >= 1
   cluster.multipolygons <- lapply(cluster.geometries[cluster.geometries.nonempty], as.MULTIPOLYGON)

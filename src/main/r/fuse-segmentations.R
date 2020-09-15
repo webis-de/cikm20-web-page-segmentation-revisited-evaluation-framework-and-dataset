@@ -24,7 +24,8 @@ option_list <- list(
     make_option("--segments-min-annotators", type="integer", default=min.annotators.default, help=paste("All segments of the image that have an annotation by less than this number of annotators are discarded; default=", min.annotators.default, sep=""), dest="min.annotators"),
     make_option("--size-function", type="character", default=size.function.default, help=paste("Function used to determine the type and sizes of initial clusters. One of 'area', 'canny-0x<sigma>-1-<upper.threshold>' (with '<sigma>' and '<upper.threshold>' replaced accordingly), 'edges-fine', 'edges-coarse', 'identity', or 'ncharacters'; default=", size.function.default, sep=""), dest="size.function"),
     make_option("--method", type="character", default=hclust.method.default, help=paste("Method used by the hierarchical clustering algorithm for determining the new disagreements after merging clusters; default=", hclust.method.default, sep=""), dest="method"),
-    make_option("--disagreement-threshold", type="double", default=hclust.disagreement.thresholds.default, help=paste("Distance threshold for the hierarchical clustering algorithm; default=", paste(hclust.disagreement.thresholds.default, collapse=","), sep=""), dest="disagreement.threshold")
+    make_option("--disagreement-threshold", type="double", default=hclust.disagreement.thresholds.default, help=paste("Distance threshold for the hierarchical clustering algorithm; default=", paste(hclust.disagreement.thresholds.default, collapse=","), sep=""), dest="disagreement.threshold"),
+    make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
 options.parser <- OptionParser(option_list=option_list)
@@ -47,7 +48,7 @@ write(paste("Task", task$id), "")
 start <- Sys.time();
 
 write(paste("  Clustering for", options$size.function), file="")
-clustering <- Clustering.task(task, size.function = options$size.function)
+clustering <- Clustering.task(task, size.function = options$size.function, precision = options$precision)
 write(paste("  Filtering clusters with less than", options$min.annotators, "annotators"), file="")
 clustering <- FilterClustersByAnnotatorsCount(clustering, options$min.annotators)
 write("  Disagreement matrix", file="")
