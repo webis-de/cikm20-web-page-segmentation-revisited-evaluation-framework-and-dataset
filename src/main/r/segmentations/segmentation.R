@@ -2,7 +2,7 @@ as.segmentation <- function(x, ...) {
   UseMethod("as.segmentation")
 }
 
-as.segmentation.segmemtation <- function(segmentation) {
+as.segmentation.segmentation <- function(segmentation) {
   return(segmentation)
 }
 
