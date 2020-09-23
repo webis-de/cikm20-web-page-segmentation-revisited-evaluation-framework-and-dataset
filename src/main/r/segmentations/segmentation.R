@@ -55,11 +55,12 @@ Boundingbox.segmentation <- function(segmentation) {
   return(as.segmentation(lapply(segmentation, Boundingbox)))
 }
 
-plot.segmentation <- function(segmentation, col = c("green", "blue", "purple", "orange", "red", "cyan", "salmon"), ...) {
+plot.segmentation <- function(segmentation, col = default.segmentations.colors, border = col, ...) {
   index <- 0
   for (segment in segmentation) {
     col.index <- ((index - 1) %% length(col)) + 1
-    plot(segment, col = col[col.index], ...)
+    border.index <- ((index - 1) %% length(border)) + 1
+    plot(segment, col = col[col.index], border = border[border.index], ...)
     index <- index + 1
   }
 }

@@ -13,7 +13,7 @@ Clusterings <- function(task, segment.size.functions = list(AreaSegmentSizeFunct
   return(c(pixel.clusterings, node.clusterings))
 }
 
-Clustering.task <- function(task, size.function = size.function.default, ...) {
+Clustering.task <- function(task, size.function = size.function.default, precision = precision.default, ...) {
   if (length(grep("^canny-", size.function)) > 0) {
     canny.parameters <- as.numeric(strsplit(sub("canny-0x", "", size.function), "-")[[1]])
     size.function <- "canny"
@@ -23,13 +23,13 @@ Clustering.task <- function(task, size.function = size.function.default, ...) {
   }
 
   if (size.function == "pixels" || size.function == "area") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(AreaSegmentSizeFunction()), ...)[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(AreaSegmentSizeFunction()), precision = precision, ...)[[1]])
   } else if (size.function == "canny") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, canny.sigma, canny.upper.threshold)), ...)[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, canny.sigma, canny.upper.threshold)), precision = precision, ...)[[1]])
   } else if (size.function == "edges-fine") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-fine")), ...)[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-fine")), precision = precision, ...)[[1]])
   } else if (size.function == "edges-coarse") {
-    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-coarse")), ...)[[1]])
+    return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-coarse")), precision = precision, ...)[[1]])
   } else if (size.function == "nodes" || size.function == "identity") {
     return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = IdentityXPathNodeSizeFunction(), ...))
   } else if (size.function == "chars" || size.function == "ncharacters") {
