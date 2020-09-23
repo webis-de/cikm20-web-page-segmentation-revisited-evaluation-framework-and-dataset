@@ -22,7 +22,7 @@ Clustering.task <- function(task, size.function = size.function.default, ...) {
     canny.upper.threshold <- canny.parameters[3]
   }
 
-  if (size.function == "area") {
+  if (size.function == "pixels" || size.function == "area") {
     return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(AreaSegmentSizeFunction()), ...)[[1]])
   } else if (size.function == "canny") {
     return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, canny.sigma, canny.upper.threshold)), ...)[[1]])
@@ -30,9 +30,9 @@ Clustering.task <- function(task, size.function = size.function.default, ...) {
     return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-fine")), ...)[[1]])
   } else if (size.function == "edges-coarse") {
     return(PixelBasedClusterings(task$segmentations, segment.size.functions = list(CannySegmentSizeFunction(task, name = "edges-coarse")), ...)[[1]])
-  } else if (size.function == "identity") {
+  } else if (size.function == "nodes" || size.function == "identity") {
     return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = IdentityXPathNodeSizeFunction(), ...))
-  } else if (size.function == "ncharacters") {
+  } else if (size.function == "chars" || size.function == "ncharacters") {
     return(NodeBasedClustering(task$segmentations, ReadNodes(task), xpath.node.size.function = CharactersXPathNodeSizeFunction(task), ...))
   } else {
     stop(paste("Unknown size.function:", size.function))
