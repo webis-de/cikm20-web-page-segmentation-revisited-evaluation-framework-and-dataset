@@ -1,3 +1,9 @@
+# borders for as.MULTIPOLYGON.rectangle method, as in nodes.csv
+colLeft <- 1
+colBottom <- 2
+colRight <- 3
+colTop <- 4
+
 ReadNodes <- function(x, ...) {
   UseMethod("ReadNodes")
 }

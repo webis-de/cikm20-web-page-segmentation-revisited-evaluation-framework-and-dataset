@@ -1,13 +1,17 @@
 library(sf)
 
-# borders for rect() method, used in elements.csv
-colLeft <- 1
-colBottom <- 2
-colRight <- 3
-colTop <- 4
+Segment <- function(xs, ys) {
+  mat <- matrix(c(c(xs, xs[1]), c(ys, ys[1])), ncol=2)
+  return(as.segment(mat))
+}
 
 as.segment <- function(x, ...) {
   UseMethod("as.segment")
+}
+
+as.segment.matrix <- function(mat) {
+  if (dim(mat)[2] != 2) { stop(paste("only matrices with two columns can be converted to segments, but this one had", dim(mat)[2])) }
+  return(as.segment(list(list(c(t(mat))))))
 }
 
 as.segment.segment <- function(segment) {

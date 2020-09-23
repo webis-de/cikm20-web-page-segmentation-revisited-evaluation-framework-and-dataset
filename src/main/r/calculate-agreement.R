@@ -19,7 +19,8 @@ library("optparse")
 option_list <- list(
     make_option("--input", type="character", default=NULL, help="JSON file of segmentations for which to calculate agreement"),
     make_option("--output", type="character", default=NULL, help="Directory to which agreement files should be written"),
-    make_option("--segmentations", type="character", default=".*", help="Pattern that matches the names of the segmentations that should be merged to one (default: .*)")
+    make_option("--segmentations", type="character", default=".*", help="Pattern that matches the names of the segmentations that should be merged to one (default: .*)"),
+    make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
 options.parser <- OptionParser(option_list=option_list)
@@ -44,7 +45,7 @@ write(paste("Task", task$id), "")
 start <- Sys.time();
 
 write("  Clusterings", file="")
-clusterings <- Clusterings(task)
+clusterings <- Clusterings(task, precision = options$precision)
 agreement.matrices <- list()
 write("  Agreement: pixel (including edges, they are just weighted differently)", file="")
 agreement.matrices[["pixel"]] <- AgreementMatrices(clusterings$pixel)

@@ -20,7 +20,8 @@ option_list <- list(
     make_option("--ground-truth", type="character", default=NULL, help="JSON file of segmentations that contain the ground-truth segmentation", dest="ground.truth"),
     make_option("--ground-truth-segmentation", type="character", default=".*", help="Pattern that matche the name of the segmentations from the ground-truth segmentations file that the algorithm segmentation should be evaluated against (default: .*)", dest="ground.truth.segmentation"),
     make_option("--output", type="character", default=NULL, help="CSV file to which the evaluation should be written (default: do not write to a file)"),
-    make_option("--size-function", type="character", default=size.function.default, help=paste("Function used to determine the type and sizes of the clusters. One of 'area', 'canny-0x<sigma>-1-<upper.threshold>' (with '<sigma>' and '<upper.threshold>' replaced accordingly), 'identity', or 'ncharacters'. All resources that are needed by the selected function have to reside in the directory of the ground-truth file; default=", size.function.default, sep=""), dest="size.function")
+    make_option("--size-function", type="character", default=size.function.default, help=paste("Function used to determine the type and sizes of the clusters. One of 'area', 'canny-0x<sigma>-1-<upper.threshold>' (with '<sigma>' and '<upper.threshold>' replaced accordingly), 'identity', or 'ncharacters'. All resources that are needed by the selected function have to reside in the directory of the ground-truth file; default=", size.function.default, sep=""), dest="size.function"),
+    make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
 options.parser <- OptionParser(option_list=option_list)
@@ -58,7 +59,7 @@ for (gt in 1:length(task.ground.truth)) {
   write(paste("Ground-truth:", names(task.ground.truth$segmentations)[gt], "with", length(task.ground.truth$segmentations[[gt]]), "segments"), file="")
 
   task <- merge(subset(task.ground.truth, gt), task.algorithm)
-  clustering <- Clustering.task(task, size.function = options$size.function)
+  clustering <- Clustering.task(task, size.function = options$size.function, precision = options$precision)
   bcubed.matrix <- BCubedPrecisionMatrix(clustering)
 
   bcubed.precision <- bcubed.matrix[2,1]

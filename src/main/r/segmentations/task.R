@@ -1,5 +1,43 @@
 library("jsonlite")
 
+#' Creates a new segmentation task object without segmentations.
+#'
+#' \code{Task(id, width, height)}             # A task without a directory to read task data from
+#' \code{Task(id, width, height, directory)}  # A task with a directory to read task data from
+#' \code{Task(screenshotFile)}                # A task with ID, width, height, and directory determined through the screenshot file
+#' \code{Task(id, screenshotFile)}            # A task with width, height, and directory determined through the screenshot file
+#'
+#' @param id The ID of the task
+#' @param width The width of the task's page/screenshot in pixels; only used if no screenshot file is given
+#' @param height The height of the task's page/screenshot in pixels; only used if no screenshot file is given
+#' @param directory The directory to read task data (screenshots, nodes.csv) from; only used if no screenshot file is given
+#' @param screenshotFile The file of the screenshot to use to determine the ID (optional, as the directory name), width, height, and the task directory
+Task <- function(id = NULL, width = 0, height = 0, directory = NULL, screenshotFile = NULL) {
+  task <- list()
+  task$segmentations <- list()
+  if (is.null(screenshotFile)) {
+    task$id <- id
+    task$height <- height
+    task$width <- width
+    if (is.null(directory)) {
+      task$directory <- ""
+    } else {
+      task$directory <- directory
+    }
+  } else {
+    screenshot <- readPNG(screenshotFile)
+    if (is.null(id)) {
+      task$id <- basename(dirname(screenshotFile))
+    } else {
+      task$id <- id
+    }
+    task$height <- dim(screenshot)[1]
+    task$width <- dim(screenshot)[2]
+    task$directory <- dirname(screenshotFile)
+  }
+  return(as.task(task))
+}
+
 as.task <- function(x, ...) {
   UseMethod("as.task")
 }
