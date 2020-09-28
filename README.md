@@ -17,13 +17,11 @@ Relies on a local installation of `libgdal-dev` and `libudunits2-dev` (package n
 
 
 ## Algorithm Evaluation
-
-
 The segmentation algorithm has to produce a segmentation in the same JSON format as the segmentations in this dataset. Then run:
 ```
 Rscript src/main/r/evaluate-segmentation.R --algorithm <algorithm-segmentation.json> --ground-truth webis-webseg-20/000000/ground-truth.json
 # Example: treat first fitted annotation as algorithm (ID of that annotation starts with 3I01)
-Rscript src/main/r/evaluate-segmentation.R --algorithm webis-webseg-20/000000/fitted-annotations.json --algorithm-segmentation 3IO1 --ground-truth webis-web-segments-20/000000/ground-truth.json
+Rscript src/main/r/evaluate-segmentation.R --algorithm webis-webseg-20/000000/fitted-annotations.json --algorithm-segmentation 3IO1 --ground-truth webis-webseg-20/000000/ground-truth.json
 ```
 
 ### Run In-browser Segmentation Algorithm
@@ -48,29 +46,29 @@ Then do the following to reproduce our steps of dataset creation and agreement c
 We use image magick to detect edges. You can use it like this:
 ```
 ./src/main/bash/detect-edges.sh webis-webseg-20/000000/screenshot.png 1  2 # fine
-mv webis-webseg-20/000000/screenshot-canny-0x1-1-2.png  webis-web-segments-20/000000/screenshot-edges-fine.png
+mv webis-webseg-20/000000/screenshot-canny-0x1-1-2.png  webis-webseg-20/000000/screenshot-edges-fine.png
 ./src/main/bash/detect-edges.sh webis-webseg-20/000000/screenshot.png 5 16 # coarse
-mv webis-webseg-20/000000/screenshot-canny-0x5-1-16.png webis-web-segments-20/000000/screenshot-edges-coarse.png
+mv webis-webseg-20/000000/screenshot-canny-0x5-1-16.png webis-webseg-20/000000/screenshot-edges-coarse.png
 ```
 
 ### Fit to DOM Nodes
 ```
-Rscript src/main/r/fit-to-dom-nodes.R --input webis-webseg-20/000000/annotations.json --output webis-web-segments-20/000000/fitted-annotations.json
+Rscript src/main/r/fit-to-dom-nodes.R --input webis-webseg-20/000000/annotations.json --output webis-webseg-20/000000/fitted-annotations.json
 ```
 Note: you can use the bash scripts [evaluate-fitting.sh](src/main/bash/evaluate-fitting.sh) and [get-empty-segments.sh](src/main/bash/get-empty-segments-file.sh) to process the standard output of the `fit-to-dom-nodes.R` and to reproduce some analysis of the paper.
 
 ### Calculate Agreement
 ```
-Rscript src/main/r/calculate-agreement.R --input webis-webseg-20/000000/fitted-annotations.json --segmentations fitted --output webis-web-segments-20/000000/agreement
+Rscript src/main/r/calculate-agreement.R --input webis-webseg-20/000000/fitted-annotations.json --segmentations fitted --output webis-webseg-20/000000/agreement
 tail webis-webseg-20/000000/agreement/*
-Rscript src/main/r/calculate-bcubed.R webis-webseg-20/000000/agreement/*
+Rscript src/main/r/calculate-bcubed.R webis-webseg-20/000000/agreement/* # ignore precision and recall
 ```
 
 ### Fuse Segmentations
 ```
 min_annotators=3
 disagreement_threshold=0.5
-Rscript src/main/r/fuse-segmentations.R --input webis-webseg-20/000000/fitted-annotations.json --segments-min-annotators $min_annotators --disagreement-threshold=$disagreement_threshold --output webis-web-segments-20/000000/ground-truth.json
+Rscript src/main/r/fuse-segmentations.R --input webis-webseg-20/000000/fitted-annotations.json --segments-min-annotators $min_annotators --disagreement-threshold=$disagreement_threshold --output webis-webseg-20/000000/ground-truth.json
 ```
 
 ### Plotting Segmentations
