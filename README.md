@@ -53,9 +53,9 @@ mv webis-webseg-20/000000/screenshot-canny-0x5-1-16.png webis-webseg-20/000000/s
 
 ### Fit to DOM Nodes
 ```
-Rscript src/main/r/fit-to-dom-nodes.R --input webis-webseg-20/000000/annotations.json --output webis-webseg-20/000000/fitted-annotations.json
+Rscript src/main/r/fit-segmentations-to-dom-nodes.R --input webis-webseg-20/000000/annotations.json --output webis-webseg-20/000000/fitted-annotations.json
 ```
-Note: you can use the bash scripts [evaluate-fitting.sh](src/main/bash/evaluate-fitting.sh) and [get-empty-segments.sh](src/main/bash/get-empty-segments-file.sh) to process the standard output of the `fit-to-dom-nodes.R` and to reproduce some analysis of the paper.
+Note: you can use the bash scripts [evaluate-fitting.sh](src/main/bash/evaluate-fitting.sh) and [get-empty-segments.sh](src/main/bash/get-empty-segments-file.sh) to process the standard output of the `fit-segmentations-to-dom-nodes.R` and to reproduce some analysis of the paper.
 
 ### Calculate Agreement
 ```
