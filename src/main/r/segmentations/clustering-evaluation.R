@@ -122,8 +122,7 @@ BCubedF1Matrix <- function(bcubed.precision.matrix) {
 
 EvaluationMatrixMean <- function(evaluation.matrix) {
   if (!inherits(evaluation.matrix, "EvaluationMatrix")) { stop(paste("Method requires an EvaluationMatrix, but got a", paste(class(evaluation.matrix), collapse=","))) }
-  non.self.evaluations <- diag(dim(evaluation.matrix)[1]) != 1
-  return(mean(evaluation.matrix[non.self.evaluations]))
+  return(mean(evaluation.matrix[lower.tri(evaluation.matrix)]))
 }
 
 WriteBCubedPrecisionMatrix <- function(bcubed.precision.matrix, file="") {

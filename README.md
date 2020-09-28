@@ -59,10 +59,11 @@ Rscript src/main/r/fit-to-dom-nodes.R --input webis-webseg-20/000000/annotations
 ```
 Note: you can use the bash scripts [evaluate-fitting.sh](src/main/bash/evaluate-fitting.sh) and [get-empty-segments.sh](src/main/bash/get-empty-segments-file.sh) to process the standard output of the `fit-to-dom-nodes.R` and to reproduce some analysis of the paper.
 
-### Calculate Agreement Matrices
+### Calculate Agreement
 ```
 Rscript src/main/r/calculate-agreement.R --input webis-webseg-20/000000/fitted-annotations.json --segmentations fitted --output webis-web-segments-20/000000/agreement
 tail webis-webseg-20/000000/agreement/*
+Rscript src/main/r/calculate-bcubed.R webis-webseg-20/000000/agreement/*
 ```
 
 ### Fuse Segmentations
