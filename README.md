@@ -59,9 +59,9 @@ Note: you can use the bash scripts [evaluate-fitting.sh](src/main/bash/evaluate-
 
 ### Calculate Agreement
 ```
-Rscript src/main/r/calculate-agreement.R --input webis-webseg-20/000000/fitted-annotations.json --segmentations fitted --output webis-webseg-20/000000/agreement
+Rscript src/main/r/calculate-pairwise-agreement.R --input webis-webseg-20/000000/fitted-annotations.json --segmentations fitted --output webis-webseg-20/000000/agreement
 tail webis-webseg-20/000000/agreement/*
-Rscript src/main/r/calculate-bcubed.R webis-webseg-20/000000/agreement/* # ignore precision and recall
+Rscript src/main/r/calculate-averaged-agreement.R webis-webseg-20/000000/agreement/*
 ```
 
 ### Fuse Segmentations

@@ -28,13 +28,11 @@ options <- parse_args(options.parser, positional_arguments = TRUE)
 ################################################################################
 
 output <- options$output
-write("#file precision recall f1 max", file="")
+write("#file f1 max", file="")
 for (input in options$args) {
   bcubed.precision.matrix <- ReadBCubedPrecisionMatrix(input)
-  bcubed.precision <- EvaluationMatrixMean(bcubed.precision.matrix)
-  bcubed.recall <- EvaluationMatrixMean(BCubedRecallMatrix(bcubed.precision.matrix))
   bcubed.f1 <- EvaluationMatrixMean(BCubedF1Matrix(bcubed.precision.matrix))
   bcubed.max <- EvaluationMatrixMean(BCubedMaxMatrix(bcubed.precision.matrix))
-  write(paste(input, bcubed.precision, bcubed.recall, bcubed.f1, bcubed.max), file="")
+  write(paste(input, bcubed.f1, bcubed.max), file="")
 }
 
