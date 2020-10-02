@@ -78,4 +78,21 @@ Rscript src/main/r/plot-segmentations.R --input webis-webseg-20/000000/annotatio
 ```
 
 
+## Other Tools
+
+### Calculate Statistics
+Currently calculates the following statistics for each segmentation:
+  - Number of segments
+  - Ratio of pixels of the screenshot that are in at least one segment (by all pixels)
+
+```
+Rscript src/main/r/calculate-segmentations-statistics.R --input webis-webseg-20/000000/annotations.json
+```
+
+### Flatten Segmentations
+Converts a hierarchical segmentation to a flat one by intersecting each segment with each other one.
+```
+Rscript src/main/r/flatten-segmentations.R --help
+```
+
 
