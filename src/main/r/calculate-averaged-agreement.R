@@ -8,8 +8,6 @@ rscript.options <- commandArgs(trailingOnly = FALSE)
 source.dir <- dirname(sub(".*=", "", rscript.options[grep("--file=", rscript.options)]))
 source(paste(source.dir, "segmentations", "lib.R", sep="/"))
 
-max.segmentations <- 5
-
 ################################################################################
 ## OPTIONS
 ################################################################################
