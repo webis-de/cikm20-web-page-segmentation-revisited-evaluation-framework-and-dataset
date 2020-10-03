@@ -8,8 +8,6 @@ rscript.options <- commandArgs(trailingOnly = FALSE)
 source.dir <- dirname(sub(".*=", "", rscript.options[grep("--file=", rscript.options)]))
 source(paste(source.dir, "segmentations", "lib.R", sep="/"))
 
-max.segmentations <- 5
-
 ################################################################################
 ## OPTIONS
 ################################################################################
@@ -27,7 +25,6 @@ options <- parse_args(options.parser, positional_arguments = TRUE)
 ## EXECUTION
 ################################################################################
 
-output <- options$output
 write("#file f1 max", file="")
 for (input in options$args) {
   bcubed.precision.matrix <- ReadBCubedPrecisionMatrix(input)
