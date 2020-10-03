@@ -80,6 +80,12 @@ Rscript src/main/r/plot-segmentations.R --input webis-webseg-20/000000/annotatio
 
 ## Other Tools
 
+### Combine Segmentation Files
+Creates one segmentation file that contains all segmentations of the input segmentation files (which must all have the same `id`).
+```
+Rscript src/main/r/combine-segmentation-files.R segmentations1.json segmentations2.json segmentations-combined.json
+```
+
 ### Calculate Statistics
 Currently calculates the following statistics for each segmentation:
   - Number of segments
