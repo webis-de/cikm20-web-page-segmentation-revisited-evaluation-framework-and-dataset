@@ -25,7 +25,6 @@ options <- parse_args(options.parser, positional_arguments = TRUE)
 ## EXECUTION
 ################################################################################
 
-output <- options$output
 write("#file f1 max", file="")
 for (input in options$args) {
   bcubed.precision.matrix <- ReadBCubedPrecisionMatrix(input)
