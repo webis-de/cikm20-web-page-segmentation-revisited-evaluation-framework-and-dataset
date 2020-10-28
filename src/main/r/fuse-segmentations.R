@@ -24,7 +24,7 @@ option_list <- list(
     make_option("--segments-min-annotators", type="integer", default=min.annotators.default, help=paste("All segments of the image that have an annotation by less than this number of annotators are discarded; default=", min.annotators.default, sep=""), dest="min.annotators"),
     make_option("--size-function", type="character", default=size.function.default, help=paste("Function used to determine the type and sizes of the clusters. One of 'pixels' (alias 'area'), 'edges-fine', 'edges-coarse', 'canny-0x<sigma>-1-<upper.threshold>' (with '<sigma>' and '<upper.threshold>' replaced accordingly), 'nodes' (alias 'identity'), or 'chars' (alias 'ncharacters'). All resources that are needed by the selected function have to reside in the directory of the ground-truth file; default=", size.function.default, sep=""), dest="size.function"),
     make_option("--method", type="character", default=hclust.method.default, help=paste("Method used by the hierarchical clustering algorithm for determining the new disagreements after merging clusters; default=", hclust.method.default, sep=""), dest="method"),
-    make_option("--disagreement-threshold", type="double", default=hclust.disagreement.thresholds.default, help=paste("Distance threshold for the hierarchical clustering algorithm; default=", paste(hclust.disagreement.thresholds.default, collapse=","), sep=""), dest="disagreement.threshold"),
+    make_option("--disagreement-threshold", type="character", default=paste(hclust.disagreement.thresholds.default, collapse=","), help=paste("Distance threshold for the hierarchical clustering algorithm; default=", paste(hclust.disagreement.thresholds.default, collapse=","), sep=""), dest="disagreement.threshold"),
     make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
@@ -54,7 +54,8 @@ clustering <- FilterClustersByAnnotatorsCount(clustering, options$min.annotators
 write("  Disagreement matrix", file="")
 disagreement.matrix <- ClusterAnnotatorDisagreementMatrix(clustering)
 write(paste("  Segmentation with", options$method, "at", paste(options$disagreement.threshold, collapse=",")), file="")
-segmentations <- ClusterHClust.dist(disagreement.matrix, clustering, disagreement.thresholds = options$disagreement.threshold, method=options$method)
+disagreement.thresholds <- as.numeric(unlist(strsplit(options$disagreement.threshold, ",")))
+segmentations <- ClusterHClust.dist(disagreement.matrix, clustering, disagreement.thresholds = disagreement.thresholds, method=options$method)
 
 task$segmentations <- subset.segmentations(segmentations, "^disagreement")
 WriteTask(task, options$output)
