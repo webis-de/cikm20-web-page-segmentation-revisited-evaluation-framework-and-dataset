@@ -19,8 +19,7 @@ option_list <- list(
     make_option("--output", type="character", default=NULL, help="JSON file to which segmentations should be written"),
     make_option("--nodes", type="character", default=NULL, help="The nodes.csv file that contains the nodes to fit to; default: take the nodes.csv next to the input file."),
     make_option("--fit-containment-threshold", type="double", default=fit.containment.threshold.default, help=paste("Fitted segments are the minimum axis-aligned rectangles that contain all elements that where contained to at least this percentage in the original rectangle; default=", fit.containment.threshold.default, sep=""), dest="fit.containment.threshold"),
-    make_option("--segmentations", type="character", default=".*", help="Pattern that matches the names of the segmentations that should be fitted (default: .*)"),
-    make_option("--tolerance", type="numeric", default=0, help="Tolerance for simplification; default: 0")
+    make_option("--segmentations", type="character", default=".*", help="Pattern that matches the names of the segmentations that should be fitted (default: .*)")
   )
 
 options.parser <- OptionParser(option_list=option_list)
@@ -47,7 +46,7 @@ if (is.null(options$nodes)) {
 } else {
   nodes <- ReadNodes(options$nodes)
 }
-task <- FitToNodes(subset(task, options$segmentations), nodes = nodes, fit.containment.threshold = options$fit.containment.threshold, tolerance = options$tolerance, write.info = TRUE)
+task <- FitToNodes(subset(task, options$segmentations), nodes = nodes, fit.containment.threshold = options$fit.containment.threshold, write.info = TRUE)
 task <- subset(task, ".*fitted")
 WriteTask(task, options$output)
 

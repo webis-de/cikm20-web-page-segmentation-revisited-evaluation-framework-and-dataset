@@ -43,20 +43,20 @@ FitToNodes.segmentation <- function(segmentation, nodes, node.areas = st_area(no
   return(unique(segmentation, write.info = write.info))
 }
 
-FitToNodes.segment <- function(segment, nodes, node.areas = st_area(nodes), fit.containment.threshold = fit.containment.threshold.default, tolerance = 0, write.info = FALSE) {
+FitToNodes.segment <- function(segment, nodes, node.areas = st_area(nodes), fit.containment.threshold = fit.containment.threshold.default, write.info = FALSE) {
 
-  segment <- as.MULTIPOLYGON.segment(st_make_valid(as.MULTIPOLYGON.segment(segment)))
+  segment <- as.MULTIPOLYGON.segment(segment)
   overlapping <- st_intersects(nodes, segment, sparse=FALSE)
   nodes.overlapping <- nodes[overlapping]
   node.overlapping.areas <- node.areas[overlapping]
 
-  overlap.areas <- st_area(st_intersection(nodes.overlapping, segment, tolerance = tolerance))
+  overlap.areas <- st_area(st_intersection(nodes.overlapping, segment))
   nodes.contained <- (overlap.areas / node.overlapping.areas) >= fit.containment.threshold
-  segment.fitted <- as.segment(st_simplify(st_union(nodes.overlapping[nodes.contained]), dTolerance = tolerance))
+  segment.fitted <- as.segment(st_simplify(st_union(nodes.overlapping[nodes.contained])))
 
   if (write.info) {
     polygon.fitted <- as.MULTIPOLYGON.segment(segment.fitted)
-    overlap.area <- st_area(st_intersection(segment, polygon.fitted, tolerance = tolerance))
+    overlap.area <- st_area(st_intersection(segment, polygon.fitted))
     write(paste("  original-area: ", st_area(segment), " contained-nodes: " , sum(nodes.contained), " fitted-area: ", st_area(polygon.fitted), " overlap-area: ", overlap.area, sep=""), file="")
   }
   return(segment.fitted)
