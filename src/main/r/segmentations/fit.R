@@ -45,7 +45,8 @@ FitToNodes.segmentation <- function(segmentation, nodes, node.areas = st_area(no
 
 FitToNodes.segment <- function(segment, nodes, node.areas = st_area(nodes), fit.containment.threshold = fit.containment.threshold.default, tolerance = 0, write.info = FALSE) {
 
-  segment <- as.MULTIPOLYGON.segment(st_make_valid(as.MULTIPOLYGON.segment(segment)))
+  segment <- as.MULTIPOLYGON.segment(segment)
+  segment <- as.MULTIPOLYGON.segment(segment[st_is_valid(segment)])
   overlapping <- st_intersects(nodes, segment, sparse=FALSE)
   nodes.overlapping <- nodes[overlapping]
   node.overlapping.areas <- node.areas[overlapping]
