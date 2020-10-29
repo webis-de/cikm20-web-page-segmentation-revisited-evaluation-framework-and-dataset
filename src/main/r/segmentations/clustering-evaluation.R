@@ -16,11 +16,12 @@ AgreementMatrix <- function(clustering, membership.subset) {
   # fill lower triangle
   triangle <- lower.tri(common.segment.counts, diag=TRUE)
   triangle.indices <- which(triangle, arr.ind=TRUE)
-  common.segment.counts[triangle] <- apply(triangle.indices, 1, GetAgreement)
-  # make symmetric
-  upper.triangle.indices <- upper.tri(common.segment.counts)
-  common.segment.counts[upper.triangle.indices] <- t(common.segment.counts)[upper.triangle.indices]
-
+  if (dim(triangle.indices)[1] > 0) {
+    common.segment.counts[triangle] <- apply(triangle.indices, 1, GetAgreement)
+    # make symmetric
+    upper.triangle.indices <- upper.tri(common.segment.counts)
+    common.segment.counts[upper.triangle.indices] <- t(common.segment.counts)[upper.triangle.indices]
+  }
   class(common.segment.counts) <- c("AgreementMatrix", "matrix")
   return(common.segment.counts)
 }
