@@ -77,6 +77,12 @@ See the command help for all parameters.
 Rscript src/main/r/plot-segmentations.R --input webis-webseg-20/000000/annotations.json --frames --line-width 5 --screenshot webis-webseg-20/000000/screenshot-edges-coarse.png --output annotations-on-coarse-edges.png
 ```
 
+### Plotting Text Masks
+```
+height=$(cat webis-webseg-20-000000/000000/annotations.json | grep -o '"height" *: *[0-9]*' | grep -o '[0-9]*')
+Rscript src/main/r/plot-text-mask.R --input webis-webseg-20/000000/nodes.csv --height $height --output text-mask.png
+```
+
 
 ## Other Tools
 
