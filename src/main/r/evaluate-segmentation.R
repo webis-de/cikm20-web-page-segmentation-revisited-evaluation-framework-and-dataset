@@ -21,6 +21,7 @@ option_list <- list(
     make_option("--ground-truth-segmentation", type="character", default=".*", help="Pattern that matches the name of the segmentations from the ground-truth segmentations file that the algorithm segmentation should be evaluated against (default: .*)", dest="ground.truth.segmentation"),
     make_option("--output", type="character", default=NULL, help="CSV file to which the evaluation should be written (default: do not write to a file)"),
     make_option("--size-function", type="character", default=size.function.default, help=paste("Function used to determine the type and sizes of the clusters. One of 'pixels' (alias 'area'), 'edges-fine', 'edges-coarse', 'canny-0x<sigma>-1-<upper.threshold>' (with '<sigma>' and '<upper.threshold>' replaced accordingly), 'nodes' (alias 'identity'), or 'chars' (alias 'ncharacters'). All resources that are needed by the selected function have to reside in the directory of the ground-truth file; default=", size.function.default, sep=""), dest="size.function"),
+    make_option("--default-segmentation", action="store_true", default=FALSE, help=paste("Treat an algorithm segmentation with no segments like a segmentation in which the entire web page is in one segment instead of throwing an error"), dest="default.segmentation"),
     make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
@@ -55,6 +56,11 @@ colnames(bcubed) <- c("bcubed.precision", "bcubed.recall", "bcubed.f1")
 row.names <- rep("NAME", length(task.ground.truth))
 
 write(paste("Algorithm:", names(task.algorithm$segmentations), "with", length(task.algorithm$segmentations[[1]]), "segments"), file="")
+if ((length(task.algorithm$segmentations[[1]]) == 0) & (options$default.segmentation)) {
+  segment <- Segment(c(0,0,task.algorithm$width,task.algorithm$width), c(0,task.algorithm$height,task.algorithm$height,0))
+  write("Treating segmentation without segments as one where one segments covers the whole page", file="")
+  task.algorithm$segmentations[[1]] <- list(segment)
+}
 for (gt in 1:length(task.ground.truth)) {
   write(paste("Ground-truth:", names(task.ground.truth$segmentations)[gt], "with", length(task.ground.truth$segmentations[[gt]]), "segments"), file="")
 
