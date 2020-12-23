@@ -157,7 +157,8 @@ PixelBasedClusterings <- function(segmentations, segment.size.functions = list(A
   num.segments <- sum(GetLengths(segmentations))
 
   segmentation.geometries <- st_simplify(as.sfc.segmentations(segmentations))
-  segmentation.geometries <- st_snap(segmentation.geometries, segmentation.geometries, 1)
+  segmentation.geometries <- st_set_precision(segmentation.geometries, precision)
+  segmentation.geometries <- st_snap(segmentation.geometries, segmentation.geometries, 0.9)
   segmentation.geometries <- segmentation.geometries[st_area(st_set_precision(segmentation.geometries, precision)) >= 1]
   segmentation.geometries <- segmentation.geometries[st_is_valid(st_set_precision(segmentation.geometries, precision))]
   cluster.geometries <- st_intersection(segmentation.geometries)
