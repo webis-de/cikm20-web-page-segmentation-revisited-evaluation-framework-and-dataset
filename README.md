@@ -5,13 +5,13 @@ If you want to extend this dataset, create your own, or just check how we did it
 
 
 ## Requirements
-R (tested with 3.4.4)
-  - jsonlite (tested with 1.6)
-  - optparse (tested with 1.6.2)
-  - png (tested with 0.1-7)
-  - raster (tested with 2.9-23)
-  - sf (tested with 0.7-7)
-  - sp (tested with 1.3-1)
+R (tested with 3.6.3)
+  - jsonlite (tested with 1.7.2)
+  - optparse (tested with 1.6.6)
+  - png (tested with 0.1.7)
+  - raster (tested with 3.4.5)
+  - sf (tested with 0.9.6)
+  - sp (tested with 1.4.4)
 
 Relies on a local installation of `libgdal-dev` and `libudunits2-dev` (package names for Debian/Ubuntu).
 
