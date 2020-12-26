@@ -18,7 +18,8 @@ library("optparse")
 
 option_list <- list(
     make_option("--input", type="character", default=NULL, help="JSON file of segmentations to flatten"),
-    make_option("--output", type="character", default=NULL, help="JSON file to which the flattened segmentations should be written to")
+    make_option("--output", type="character", default=NULL, help="JSON file to which the flattened segmentations should be written to"),
+    make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
 options.parser <- OptionParser(option_list=option_list)
@@ -41,7 +42,8 @@ if (is.null(options$output)) {
 task <- ReadTask(options$input)
 for (name in names(task$segmentations)) {
   geometries <- st_simplify(as.sfc.segmentation(task$segmentations[[name]]))
-  geometries <- st_snap(geometries, geometries, 1)
+  geometries <- st_snap(geometries, geometries, 0.9)
+  geometries <- st_set_precision(geometries, options$precision)
   geometries <- geometries[st_area(geometries) >= 1]
   intersected.polygons <- st_simplify(st_intersection(geometries))
   intersected.polygons <- intersected.polygons[st_area(intersected.polygons) >= 1]
