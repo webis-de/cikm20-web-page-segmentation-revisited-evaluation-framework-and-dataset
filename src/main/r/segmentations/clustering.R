@@ -193,7 +193,7 @@ NodeBasedClusterings <- function(segmentations, nodes, xpath.node.size.functions
 
 NodeBasedClustering <- function(segmentations, nodes, xpath.node.size.function = IdentityXPathNodeSizeFunction()) {
   num.segments <- sum(GetLengths(segmentations))
-  segment.multipolygons <- as.sfc.segmentations(segmentations)
+  segment.multipolygons <- st_make_valid(as.sfc.segmentations(segmentations))
 
   # cluster.multipolygons and sizes
   num.nodes <- length(nodes)
