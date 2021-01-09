@@ -157,10 +157,11 @@ PixelBasedClusterings <- function(segmentations, segment.size.functions = list(A
   num.segments <- sum(GetLengths(segmentations))
 
   segmentation.geometries <- st_simplify(as.sfc.segmentations(segmentations))
-  segmentation.geometries <- st_set_precision(segmentation.geometries, precision)
   segmentation.geometries <- st_snap(segmentation.geometries, segmentation.geometries, 0.9)
-  segmentation.geometries <- segmentation.geometries[st_area(st_set_precision(segmentation.geometries, precision)) >= 1]
-  segmentation.geometries <- segmentation.geometries[st_is_valid(st_set_precision(segmentation.geometries, precision))]
+  segmentation.geometries <- st_set_precision(segmentation.geometries, precision)
+  segmentation.geometries <- st_make_valid(segmentation.geometries)
+  segmentation.geometries <- segmentation.geometries[st_area(segmentation.geometries) >= 1]
+  segmentation.geometries <- segmentation.geometries[st_is_valid(segmentation.geometries)]
   cluster.geometries <- st_intersection(segmentation.geometries)
   cluster.geometries.nonempty <- st_area(cluster.geometries) >= 1
   cluster.multipolygons <- lapply(cluster.geometries[cluster.geometries.nonempty], as.MULTIPOLYGON)
