@@ -19,6 +19,7 @@ library("optparse")
 option_list <- list(
     make_option("--input", type="character", default=NULL, help="JSON file of segmentations to flatten"),
     make_option("--output", type="character", default=NULL, help="JSON file to which the flattened segmentations should be written to"),
+    make_option("--segmentations", type="character", default=".*", help="Pattern that matches the names of the segmentations that should be flattened (default: .*)"),
     make_option("--precision", type="double", default=precision.default, help=paste("Precision in pixels for intersections: decrease to 0.1 if you get non-noded intersections; default=", precision.default, sep=""))
   )
 
@@ -40,6 +41,7 @@ if (is.null(options$output)) {
 ################################################################################
 
 task <- ReadTask(options$input)
+task <- subset(task, options$segmentations)
 for (name in names(task$segmentations)) {
   geometries <- st_simplify(as.sfc.segmentation(task$segmentations[[name]]))
   geometries <- st_snap(geometries, geometries, 0.9)
