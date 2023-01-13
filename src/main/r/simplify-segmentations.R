@@ -1,5 +1,7 @@
 #!/usr/bin/env Rscript
 
+# This script calls st_simplify on a segmentations file, which simplifies the segments by removing vertices.
+
 ################################################################################
 ## LOADING SEGMENTATION LIBRARY
 ################################################################################
@@ -17,7 +19,7 @@ source(paste(source.dir, "segmentations", "lib.R", sep="/"))
 library("optparse")
 
 option_list <- list(
-    make_option("--input", type="character", default=NULL, help="JSON file of segmentations to flatten"),
+    make_option("--input", type="character", default=NULL, help="JSON file of segmentations to simplify"),
     make_option("--output", type="character", default=NULL, help="JSON file to which the simplified segmentations should be written to"),
     make_option("--tolerance", type="numeric", default=0, help="Tolerance for simplification; default: 0")
   )
